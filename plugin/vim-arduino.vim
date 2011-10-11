@@ -44,6 +44,14 @@ if !exists('g:vim_arduino_auto_open_serial')
   let g:vim_arduino_auto_open_serial = 0
 endif
 
+if !exists('g:vim_arduino_sketchbook')
+  let g:vim_arduino_sketchbook = $HOME."/Documents/Arduino"
+endif
+
+if !exists('g:vim_arduino_sdk_home')
+    let g:vim_arduino_sdk_home = "/Applications/Arduino.app/Contents/Resources/Java"
+endif
+
 let s:helper_dir = expand("<sfile>:h")
 
 " Private: Get the board to deploy to
@@ -104,8 +112,10 @@ function! s:InvokeArduinoCli(deploy)
     let l:command = s:helper_dir . "/vim-arduino " .
           \ l:flag . " " .
           \ "-b " . l:board . " " .
+          \ "-a " . g:vim_arduino_sdk_home . " " .
+          \ "-k " . g:vim_arduino_sketchbook . " " .
           \ shellescape(l:f_name)
-    " echo l:command
+    echo l:command
     let l:result = system(l:command)
     call s:PrintStatus(v:shell_error)
     echo l:result

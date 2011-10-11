@@ -1,5 +1,5 @@
 #!/bin/sh
-#/ Usage: vim-arduino <pde file> [board] [serialport]
+#/ Usage: vim-arduino <pde file> [board] [serialport] [sketchbook] [arduinohome]
 #/ Invokes the Arduino IDE command line runner to compile and deploy
 #/ Arduino sketches.
 #/
@@ -13,6 +13,8 @@
 pde_file=
 board="uno"
 port=
+sketchbook=
+arduinohome=
 switch="-c"
 
 while [ $# -gt 0 ]
@@ -34,6 +36,16 @@ do
             ;;
         -c|--compile)
             switch="-c"
+            shift
+            ;;
+        -k|--sketchbook)
+            shift
+            sketchbook=$1
+            shift
+            ;;
+        -a|--arduinohome)
+            shift
+            arduinohome=$1
             shift
             ;;
         *)
@@ -75,12 +87,9 @@ fi
 
 # echo "Compiling '$pde_file' for board $board on serial port $port"
 
-sketchbook=$(echo $HOME/Documents/Arduino)
-
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 java \
-  -Djava.library.path=/Applications/Arduino.app/Contents/Resources/Java \
-  -d32 \
+  -Djava.library.path="$arduinohome" \
   -Darduino.sketchbook="$sketchbook" \
   -Djava.awt.headless=true \
   -jar "$DIR/vim-arduino-cli.jar" "$switch" "$pde_file" "$port" "$board"
