@@ -66,12 +66,12 @@ endfunction
 
 " Private: Check to see if a file can be compiled by the Aruino IDE
 "
-" Returns the filename of the current buffer if it is a *.pde file. Otherwise
+" Returns the absolute path of the current buffer if it is a *.pde file. Otherwise
 " empty string.
 function! s:CheckFile()
   let l:f_name = bufname("%")
   if l:f_name =~ '.pde$'
-    return l:f_name
+    return expand("%:p")
   else
     echo "Only *.pde files can be compilied. File" l:f_name "does not have a recognized extention."
     return ""
