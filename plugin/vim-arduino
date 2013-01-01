@@ -12,7 +12,7 @@
 
 pde_file=
 board="uno"
-port=
+port="auto"
 sketchbook=
 arduinohome=
 switch="-c"
@@ -64,14 +64,14 @@ done
 }
 
 # try an find a serial port automatically if one is not passsed in.
-if [ -z "$port" ]
-then port=$(ls /dev/tty.* | grep usb)
-echo "Auto detecting serial port"
-fi
-if [ -z "$port" ]
-then port="/dev/tty."
-echo "No usb serial port found. Faking one so we can still compile."
-fi
+[ "$port" = "auto" ] && {
+	port=$(ls /dev/tty.* | grep usb)
+    echo "Auto detecting serial port"
+}
+[ -z "$port" ] && {
+    port="/dev/tty."
+    echo "No usb serial port found. Faking one so we can still compile."
+}
 
 # bail out if no serial port found.
 [ -z "$port" ] && {

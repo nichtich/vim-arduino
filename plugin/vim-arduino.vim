@@ -52,6 +52,10 @@ if !exists('g:vim_arduino_sdk_home')
     let g:vim_arduino_sdk_home = "/Applications/Arduino.app/Contents/Resources/Java"
 endif
 
+if !exists('g:vim_arduino_port')
+    let g:vim_arduino_port = "auto"
+endif
+
 let s:helper_dir = expand("<sfile>:h")
 
 " Private: Get the board to deploy to
@@ -78,10 +82,10 @@ endfunction
 " empty string.
 function! s:CheckFile()
   let l:f_name = bufname("%")
-  if l:f_name =~ '.pde$'
+  if l:f_name =~ '.pde$' || l:f_name =~ '.ino$'
     return expand("%:p")
   else
-    echo "Only *.pde files can be compilied. File" l:f_name "does not have a recognized extention."
+    echo "Only *.pde and *.ino files can be compilied. File" l:f_name "does not have a recognized extention."
     return ""
   endif
 endfunction
@@ -114,8 +118,8 @@ function! s:InvokeArduinoCli(deploy)
           \ "-b " . l:board . " " .
           \ "-a " . g:vim_arduino_sdk_home . " " .
           \ "-k " . g:vim_arduino_sketchbook . " " .
+          \ "-s " . g:vim_arduino_port . " " .
           \ shellescape(l:f_name)
-    echo l:command
     let l:result = system(l:command)
     call s:PrintStatus(v:shell_error)
     echo l:result
