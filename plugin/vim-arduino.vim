@@ -44,6 +44,14 @@ if !exists('g:vim_arduino_auto_open_serial')
   let g:vim_arduino_auto_open_serial = 0
 endif
 
+if !exists('g:vim_arduino_sketchbook')
+  let g:vim_arduino_sketchbook = $HOME."/Documents/Arduino"
+endif
+
+if !exists('g:vim_arduino_sdk_home')
+    let g:vim_arduino_sdk_home = "/Applications/Arduino.app/Contents/Resources/Java"
+endif
+
 let s:helper_dir = expand("<sfile>:h")
 
 " Private: Get the board to deploy to
@@ -66,16 +74,14 @@ endfunction
 
 " Private: Check to see if a file can be compiled by the Aruino IDE
 "
-" Returns the filename of the current buffer if it is a *.pde file. Otherwise
+" Returns the absolute path of the current buffer if it is a *.pde file. Otherwise
 " empty string.
 function! s:CheckFile()
-  let l:f_name = expand('%:p')
+  let l:f_name = bufname("%")
   if l:f_name =~ '.pde$'
-    return l:f_name
-  elseif l:f_name =~ '.ino$'
-    return l:f_name
+    return expand("%:p")
   else
-    echo "Only *.pde and *.ino files can be compilied. File" l:f_name "does not have a recognized extention."
+    echo "Only *.pde files can be compilied. File" l:f_name "does not have a recognized extention."
     return ""
   endif
 endfunction
@@ -106,8 +112,10 @@ function! s:InvokeArduinoCli(deploy)
     let l:command = s:helper_dir . "/vim-arduino " .
           \ l:flag . " " .
           \ "-b " . l:board . " " .
+          \ "-a " . g:vim_arduino_sdk_home . " " .
+          \ "-k " . g:vim_arduino_sketchbook . " " .
           \ shellescape(l:f_name)
-    " echo l:command
+    echo l:command
     let l:result = system(l:command)
     call s:PrintStatus(v:shell_error)
     echo l:result
